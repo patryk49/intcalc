@@ -216,7 +216,7 @@ static AstArray make_tokens(const char *input){
 				input += 1;
 				curr.type = Ast_LogicAnd;
 			} else{
-				RETURN_ERROR("invalid token \"&\"", position);
+				RETURN_ERROR("invalid token \'&\' ", position);
 			}
 			goto AddToken;
 
@@ -307,7 +307,7 @@ static AstArray make_tokens(const char *input){
 				curr.type = Ast_Contains;
 				input += 1;
 			} else{
-				RETURN_ERROR("invalid token \"@\"", position);
+				RETURN_ERROR("invalid token \'@\' ", position);
 			}
 			goto AddToken;
 
@@ -323,7 +323,7 @@ static AstArray make_tokens(const char *input){
 					RETURN_ERROR("invalid floating point literal", position);
 				goto AddTokenWithData;
 			} else{
-				RETURN_ERROR("invalid token \".\"", position);
+				RETURN_ERROR("invalid token \'.\' ", position);
 			}
 			goto AddToken;
 

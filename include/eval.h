@@ -17,16 +17,21 @@ typedef struct{
 
 
 EvalError eval_ast(AstArray nodes){
-	Value stack[512];
-	size_t stack_size = 0;
-	Value vars[256];
-	size_t var_count = 0;
-	
+	static const size_t StackCapacity = (1 << 16);
+	static const size_t VarsCapacity  = (1 << 16);
+
 	EvalError res_error = {0};
 #define RETURN_ERROR(msg, pos) \
 	do{ res_error = (EvalError){(msg), (pos)}; goto ReturnError; } while (0)
+
+	Value *stack = malloc(StackCapacity*sizeof(Value));
+	size_t stack_size = 0;
+	Value *vars = malloc(VarsCapacity*sizeof(Value));
+	size_t var_count = 0;
+	if (stack == NULL || vars == NULL) RETURN_ERROR("eval_error: allocation failrule", 0);
+	
 #define PUSH_VALUE(p_data, p_type) do{ \
-		if (stack_size == SIZE(stack)) RETURN_ERROR("evaluation stack overflow", node.pos); \
+		if (stack_size==StackCapacity) RETURN_ERROR("evaluation stack overflow", node.pos); \
 		stack[stack_size] = (Value){ .type = (p_type), .data = (p_data) }; \
 		stack_size += 1; \
 	} while (0)
@@ -38,7 +43,7 @@ EvalError eval_ast(AstArray nodes){
 		switch (node.type){
 		case Ast_Terminator: return res_error;
 		case Ast_Variable:{
-			if (var_count == SIZE(vars))
+			if (var_count == VarsCapacity)
 				RETURN_ERROR("eval_error: too many variables were defined", node.pos);
 			Value top = stack[stack_size-1];
 			top.name_id = ast->data.name_id;
@@ -141,7 +146,7 @@ EvalError eval_ast(AstArray nodes){
 			Value callinfo = {.type=DT_CallInfo, .data.callinfo={ast-nodes.data, var_count}};
 			Data *param_names = (Data *)(func + 2);
 			for (size_t i=0; i!=node.count; i+=1){
-				if (var_count == SIZE(vars))
+				if (var_count == VarsCapacity)
 					RETURN_ERROR("evaluation stack overflow", node.pos);
 				vars[var_count] = params[i];
 				vars[var_count].name_id = param_names[i].name_id;
