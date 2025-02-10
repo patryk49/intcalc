@@ -3,9 +3,9 @@ fib_rec = (n, x, y) => n<=1 ? y : fib_rec(n-1, x+y, x)
 fib_a = (n) => fib_rec(n, 1, 1)
 
 // non tail recursive fibonacci
-fib_b = (n) => n <= 1 ? n : fib_b(n-1) + fib_b(n-2)
+fib_b = (n) => n<=1 ? n : fib_b(n-1) + fib_b(n-2)
 
-arg = 30
+arg = 60
 
 fib_a(arg)
-fib_b(arg)
+//fib_b(arg)

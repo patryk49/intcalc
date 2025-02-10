@@ -183,7 +183,7 @@ EvalError eval_ast(AstArray nodes){
 			if (lhs.type != rhs.type)
 				RETURN_ERROR("opperator's arguments have different types", node.pos);
 			switch (lhs.type){
-			case DT_Real:
+			case DT_Real:{
 				switch (node.type){
 				case Ast_Add:      res.data.real = lhs.data.real + rhs.data.real; break;
 				case Ast_Subtract: res.data.real = lhs.data.real - rhs.data.real; break;
@@ -204,7 +204,8 @@ EvalError eval_ast(AstArray nodes){
 				default: goto BinOpTypeError;
 				}
 				break;
-			case DT_Integer:
+			}
+			case DT_Integer:{
 				switch (node.type){
 				case Ast_Add:      res.data.integer = lhs.data.integer+rhs.data.integer; break;
 				case Ast_Subtract: res.data.integer = lhs.data.integer-rhs.data.integer; break;
@@ -225,7 +226,8 @@ EvalError eval_ast(AstArray nodes){
 				default: goto BinOpTypeError;
 				}
 				break;
-			case DT_Bool:
+			}
+			case DT_Bool:{
 				switch (node.type){
 				case Ast_LogicOr:  res.data.boolean = lhs.data.boolean||rhs.data.boolean; break;
 				case Ast_LogicAnd: res.data.boolean = lhs.data.boolean&&rhs.data.boolean; break;
@@ -233,6 +235,7 @@ EvalError eval_ast(AstArray nodes){
 				default: goto BinOpTypeError;
 				}
 				break;
+			}
 			default:
 			BinOpTypeError:
 				RETURN_ERROR("argument's type is not supported by this operator", node.pos);
@@ -240,6 +243,48 @@ EvalError eval_ast(AstArray nodes){
 			if (node.flags & AstFlag_Negate){
 				assert(res.type == DT_Bool);
 				res.data.boolean = !res.data.boolean;
+			}
+			stack[stack_size-1] = res;
+			break;
+		}
+		case Ast_Power:{
+			Value lhs = stack[stack_size-2];
+			Value rhs = stack[stack_size-1];
+			stack_size -= 1;
+			Value res = { .type = lhs.type };
+			switch (rhs.type){
+			case DT_Integer:{
+				switch (lhs.type){
+				case DT_Integer:
+					res.data.integer = util_ipow_u64(lhs.data.integer, rhs.data.integer);
+					break;
+				case DT_Real:
+					res.data.real = util_ipow_f64(lhs.data.real, rhs.data.integer);
+					break;
+				default: goto PowerOpTypeError;
+				}
+				break;
+			}
+			case DT_Real:{
+				switch (lhs.type){
+				case DT_Integer:
+					if (res.data.integer < 0) goto PowerNegativeBaseError;
+					res.data.real = pow((double)lhs.data.integer, rhs.data.real);
+					res.type = DT_Real;
+					break;
+				case DT_Real:
+					if (res.data.real < 0.0) goto PowerNegativeBaseError;
+					res.data.real = pow(lhs.data.real, rhs.data.real);
+					break;
+				default: goto PowerOpTypeError;
+				}
+				break;
+			}
+			default:
+			PowerOpTypeError:
+				RETURN_ERROR("argument's type is not supported by power operator", node.pos);
+			PowerNegativeBaseError:
+				RETURN_ERROR("power operator's base cannot be negative", node.pos);
 			}
 			stack[stack_size-1] = res;
 			break;
