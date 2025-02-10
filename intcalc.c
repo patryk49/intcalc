@@ -139,9 +139,10 @@ int main(int argc, char **argv){
 		printf("hash colission ratio: %lf\n", (double)hash_colissions/(double)global_name_set.size);
 	}
 
-	if (!quiet_mode){
+	if (show_tokens | show_ast | show_stats | show_sets){
 		printf("evaluation:\n");
 	}
+
 	if (evaluate){
 		EvalError err = eval_ast(ast);
 		if (err.msg != NULL){
