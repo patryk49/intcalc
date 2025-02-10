@@ -7,6 +7,7 @@
 
 void print_tokens(AstArray tokens);
 void print_ast(AstArray tokens);
+void print_name_table(void);
 
 size_t count_tokens(AstArray tokens);
 size_t count_ast(AstArray ast);
@@ -19,6 +20,7 @@ bool show_ast    = false;
 bool show_stats  = false;
 bool show_nops   = false;
 bool show_sets   = false;
+bool show_names  = false;
 bool quiet_mode  = false;
 bool evaluate    = true;
 
@@ -40,6 +42,7 @@ int main(int argc, char **argv){
 						"  -a     dont show ast nodes\n"
 						"  -s     dont show statistics\n"
 						"  -S     print hash set info\n"
+						"  -N     print name table\n"
 						"  -e     don't evaluate\n"
 						"  -q     quiet\n"
 						"  -n     show nops\n"
@@ -48,8 +51,9 @@ int main(int argc, char **argv){
 				case 't': show_tokens = true; break;
 				case 'a': show_ast    = true; break;
 				case 's': show_stats  = true; break;
-				case 'n': show_nops   = true;  break;
-				case 'S': show_sets   = true;  break;
+				case 'n': show_nops   = true; break;
+				case 'S': show_sets   = true; break;
+				case 'N': show_names  = true; break;
 				case 'q':
 					quiet_mode  = true;
 					break;
@@ -138,8 +142,12 @@ int main(int argc, char **argv){
 		printf("hash colissions:      %zu\n", hash_colissions);
 		printf("hash colission ratio: %lf\n", (double)hash_colissions/(double)global_name_set.size);
 	}
+	
+	if (show_names){
+		print_name_table();
+	}
 
-	if (show_tokens | show_ast | show_stats | show_sets){
+	if (show_tokens | show_ast | show_stats | show_sets | show_names){
 		printf("evaluation:\n");
 	}
 
@@ -290,4 +298,18 @@ size_t count_ast(AstArray ast){
 		if (node.type == Ast_Terminator) break;
 	}
 	return res;
+}
+
+void print_name_table(void){
+	puts(" index  |       hash       | name_id |     name_string      ");
+	puts("--------+------------------+---------+----------------------");
+	for (size_t i=0; i!=global_name_set.capacity; i+=1){
+		struct NameEntry entry = global_name_set.data[i];
+		if (entry.length == 0) continue;
+		printf(" %6zu | %016lx | %7u | ", i, entry.hash, entry.name_id);
+		for (size_t j=0; j!=entry.length; j+=1)
+			putchar(global_names.data[entry.name_id + j]);
+		putchar('\n');
+	}
+	puts("--------+------------------+---------+----------------------");
 }

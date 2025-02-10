@@ -1,14 +1,11 @@
-fib = (n) => n <= 1 ? n : fib(n-1) + fib(n-2)
+// tail recursive fibonacci
+fib_rec = (n, x, y) => n<=1 ? y : fib_rec(n-1, x+y, x)
+fib_a = (n) => fib_rec(n, 1, 1)
 
-fib(0)
-fib(1)
-fib(2)
-fib(3)
-fib(4)
-fib(5)
-fib(6)
-fib(7)
-fib(8)
-fib(9)
-fib(10)
+// non tail recursive fibonacci
+fib_b = (n) => n <= 1 ? n : fib_b(n-1) + fib_b(n-2)
 
+arg = 30
+
+fib_a(arg)
+fib_b(arg)

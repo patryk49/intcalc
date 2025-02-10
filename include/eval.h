@@ -131,40 +131,9 @@ EvalError eval_ast(AstArray nodes){
 			stack[stack_size-1] = res;
 			break;
 		}
-		case Ast_Call:{
+		case Ast_Call:
+		CallFunction:{
 			Value *params = stack + stack_size - node.count;
-			#if 0
-				printf("invoking: ");
-				for (int i=-1; i!=node.count; i+=1){
-					Value top = params[i];
-					switch (top.type){
-					case DT_Null: break;
-					case DT_Real:
-						printf("%lf,  ", top.data.real);
-						break;
-					case DT_Integer:
-						printf("%li,  ", top.data.integer);
-						break;
-					case DT_Bool:
-						printf("%s,  ", top.data.boolean ? "true" : "false");
-						break;
-					case DT_Function:
-						if (top.data.funcinfo.name_id != 0){
-							printf("function \"");
-							const uint8_t *name = global_names.data + top.data.funcinfo.name_id;	
-							size_t name_len = *(name-1);
-							for (size_t i=0; i!=name_len; i+=1){ putchar(name[i]); }
-							printf("\",  ");
-						} else{
-							printf("function at %u,  ", (nodes.data + top.data.funcinfo.index)->pos);
-						}
-						break;
-					default:
-						RETURN_ERROR("expression has invalid data type", node.pos);
-					}
-				}
-				putchar('\n');
-			#endif
 			Value func_value = params[-1];
 			AstNode *func = nodes.data + func_value.data.funcinfo.index;
 			if (node.count != func->count)
@@ -173,11 +142,10 @@ EvalError eval_ast(AstArray nodes){
 			Data *param_names = (Data *)(func + 2);
 			for (size_t i=0; i!=node.count; i+=1){
 				if (var_count == SIZE(vars))
-					RETURN_ERROR("eval_error: too many variables were defined", node.pos);
+					RETURN_ERROR("evaluation stack overflow", node.pos);
 				vars[var_count] = params[i];
 				vars[var_count].name_id = param_names[i].name_id;
 				var_count += 1;
-				break;
 			}
 			stack_size -= node.count;
 			stack[stack_size-1] = callinfo;
@@ -191,6 +159,13 @@ EvalError eval_ast(AstArray nodes){
 			var_count = callinfo.vars_size;
 			ast = nodes.data + callinfo.ast_index;
 			break;
+		}
+		case Ast_Pipe:{
+			Value func = stack[stack_size-1];
+			stack[stack_size-1] = stack[stack_size-2];
+			stack[stack_size-2] = func;
+			node.count = 1;
+			goto CallFunction;
 		}
 		case Ast_Add:
 		case Ast_Subtract:
