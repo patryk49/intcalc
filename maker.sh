@@ -1,7 +1,9 @@
 #!/bin/bash
 
-clang src/$1.c -o bin/$1 -O2 -mavx -std=c2x\
+FILE=intcalc
+
+clang ${FILE}.c -o ${FILE} -O2 -mavx -std=c2x\
 	-Iinclude -lm \
 	-Wall -Wextra -Wno-attributes -Wno-unused-function -Wno-unused-variable \
 	-Wno-unused-label -Wno-unused-parameter -Wno-unused-but-set-variable \
-	$2 $3 $4 $5
+	$1 $2 $3 $4

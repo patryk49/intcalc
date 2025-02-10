@@ -14,9 +14,9 @@ size_t count_ast(AstArray ast);
 
 
 // settings
-bool show_tokens = true;
-bool show_ast    = true;
-bool show_stats  = true;
+bool show_tokens = false;
+bool show_ast    = false;
+bool show_stats  = false;
 bool show_nops   = false;
 bool show_sets   = false;
 bool quiet_mode  = false;
@@ -45,19 +45,13 @@ int main(int argc, char **argv){
 						"  -n     show nops\n"
 					);
 					return 0;
-				case 't': show_tokens = false; break;
-				case 'a': show_ast    = false; break;
-				case 's': show_stats  = false; break;
+				case 't': show_tokens = true; break;
+				case 'a': show_ast    = true; break;
+				case 's': show_stats  = true; break;
 				case 'n': show_nops   = true;  break;
 				case 'S': show_sets   = true;  break;
 				case 'q':
 					quiet_mode  = true;
-					show_tokens = false;
-					show_ast    = false;
-					show_stats  = false;
-					show_nops   = false;
-					show_sets   = false;
-					show_sets   = false;
 					break;
 				case 'e': evaluate = false; break;
 				default:
