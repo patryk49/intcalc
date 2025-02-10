@@ -96,7 +96,7 @@ static AstNode *ast_array_push2(AstArray *arr, AstNode node, Data data){
 static AstArray make_tokens(const char *input){
 	const char *text_begin = input;
 	AstArray res = ast_array_new(1024);
-	ast_array_push(&res, (AstNode){ .type = Ast_Terminator });
+	ast_array_push(&res, (AstNode){ .type = Ast_Semicolon });
 
 #define RETURN_ERROR(arg_error, arg_position) { \
 	res.error    = arg_error; \
