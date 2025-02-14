@@ -1,0 +1,13 @@
+
+ack = (m, n) => m==0 ? n+1 : n==0 ? ack(m-1, 1) : ack(m-1, ack(m, n-1))
+
+m = 3
+
+ack(m, 0)
+ack(m, 1)
+ack(m, 2)
+ack(m, 3)
+ack(m, 4)
+ack(m, 5)
+ack(m, 6)
+ack(m, 7)
