@@ -38,9 +38,9 @@ int main(int argc, char **argv){
 					printf(
 						"testnodes <option> <filename>\n  options:\n"
 						"  -h     print help\n"
-						"  -t     dont show tokens\n"
-						"  -a     dont show ast nodes\n"
-						"  -s     dont show statistics\n"
+						"  -t     show tokens\n"
+						"  -a     show ast nodes\n"
+						"  -s     show statistics\n"
 						"  -S     print hash set info\n"
 						"  -N     print name table\n"
 						"  -e     don't evaluate\n"
@@ -120,18 +120,37 @@ int main(int argc, char **argv){
 	}
 
 	if (show_stats){
+		double read_time_s = (double)read_time * 0.000001;
+		double tok_time_s = (double)tok_time * 0.000001;
+		double parse_time_s = (double)parse_time * 0.000001;
+		double making_ast_time_s = (double)(read_time_s + tok_time_s + parse_time_s);
 		size_t token_size = tokens.end - tokens.data;
 		size_t ast_size = ast.end - ast.data;
 		size_t token_count = count_tokens(tokens);
 		size_t ast_count = count_ast(ast);
-		printf("reading time:  %lf [s]\n", (double)read_time*0.000001);
-		printf("lexing time:   %lf [s]\n", (double)tok_time*0.000001);
-		printf("parsing time:  %lf [s]\n", (double)parse_time*0.000001);
-		printf("token size:    %zu [nodes]\n", token_size);
-		printf("ast size:      %zu [nodes]\n", ast_size);
-		printf("token count:   %zu\n", token_count);
-		printf("ast count:     %zu\n", ast_count);
-		printf("ast per token: %lf\n", (double)ast_size / (double)token_size);
+		double text_size_mb = text.size * 0.000001;
+
+		printf("token count    :%10zu\n", token_count);
+		printf("ast node count :%10zu\n", ast_count);
+		printf("node/token count ratio : %8.6lf\n\n", (double)ast_count/(double)token_count);
+		
+		printf("tokens size    :%10zu\n", token_size);
+		printf("ast nodes size :%10zu\n", ast_size);
+		printf("nodes/tokens size ratio : %8.6lf\n\n", (double)ast_size/(double)token_size);
+		
+		printf("lexing speed     :%16.2lf [tokens/s]\n", (double)token_count/tok_time_s);
+		printf("parsing speed    :%16.2lf [nodes/s]\n", (double)ast_count/parse_time_s);
+		printf("making ast speed :%16.2lf [nodes/s]\n\n", (double)ast_count/making_ast_time_s);
+		
+		printf("reading time    :%7.6lf [s]\n", read_time_s);
+		printf("lexing time     :%7.6lf [s]\n", tok_time_s);
+		printf("parsing time    :%7.6lf [s]\n", parse_time_s);
+		printf("making ast time :%7.6lf [s]\n\n", making_ast_time_s);
+		
+		printf("reading speed    :%11.2lf [MB/s]\n", text_size_mb/read_time_s);
+		printf("lexing speed     :%11.2lf [MB/s]\n", text_size_mb/tok_time_s);
+		printf("parsing speed    :%11.2lf [MB/s]\n", text_size_mb/parse_time_s);
+		printf("making ast speed :%11.2lf [MB/s]\n\n", text_size_mb/making_ast_time_s);
 	}
 
 	if (show_sets){
@@ -147,11 +166,10 @@ int main(int argc, char **argv){
 		print_name_table();
 	}
 
-	if (show_tokens | show_ast | show_stats | show_sets | show_names){
-		printf("evaluation:\n");
-	}
-
 	if (evaluate){
+		if (show_tokens | show_ast | show_stats | show_sets | show_names){
+			printf("evaluation:\n");
+		}
 		EvalError err = eval_ast(ast);
 		if (err.msg != NULL){
 			raise_error(text.data, err.msg, err.pos);
