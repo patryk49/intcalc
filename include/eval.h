@@ -106,6 +106,17 @@ EvalError eval_ast(AstArray nodes){
 			stack[stack_size-1] = res;
 			break;
 		}
+		case Ast_AbsValue:{
+			Value arg = stack[stack_size-1];
+			Value res = arg;
+			switch (arg.type){
+			case DT_Real:    res.data.real    = fabs(arg.data.real);   break;
+			case DT_Integer: res.data.integer = abs(arg.data.integer); break;
+			default: RETURN_ERROR("invalid argument's type for absolute value", node.pos);
+			}
+			stack[stack_size-1] = res;
+			break;
+		}
 		case Ast_LogicNot:{
 			Value arg = stack[stack_size-1];
 			Value res = arg;
