@@ -20,7 +20,6 @@ lexing time     :0.127786 [s]
 parsing time    :0.031255 [s]
 making ast time :0.159059 [s]
 
-
 reading speed    : 1424888.89 [MB/s]
 lexing speed     :     200.71 [MB/s]
 parsing speed    :     820.60 [MB/s]
