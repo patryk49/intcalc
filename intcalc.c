@@ -138,14 +138,14 @@ int main(int argc, char **argv){
 		printf("ast nodes size :%10zu\n", ast_size);
 		printf("nodes/tokens size ratio : %8.6lf\n\n", (double)ast_size/(double)token_size);
 		
-		printf("lexing speed     :%16.2lf [tokens/s]\n", (double)token_count/tok_time_s);
-		printf("parsing speed    :%16.2lf [nodes/s]\n", (double)ast_count/parse_time_s);
-		printf("making ast speed :%16.2lf [nodes/s]\n\n", (double)ast_count/making_ast_time_s);
+		printf("lexing speed     :%13.2lf [tokens/s]\n", (double)token_count/tok_time_s);
+		printf("parsing speed    :%13.2lf [nodes/s]\n", (double)ast_count/parse_time_s);
+		printf("making ast speed :%13.2lf [nodes/s]\n\n", (double)ast_count/making_ast_time_s);
 		
-		printf("reading time    :%7.6lf [s]\n", read_time_s);
-		printf("lexing time     :%7.6lf [s]\n", tok_time_s);
-		printf("parsing time    :%7.6lf [s]\n", parse_time_s);
-		printf("making ast time :%7.6lf [s]\n\n", making_ast_time_s);
+		printf("reading time    :%10.6lf [s]\n", read_time_s);
+		printf("lexing time     :%10.6lf [s]\n", tok_time_s);
+		printf("parsing time    :%10.6lf [s]\n", parse_time_s);
+		printf("making ast time :%10.6lf [s]\n\n", making_ast_time_s);
 		
 		printf("reading speed    :%11.2lf [MB/s]\n", text_size_mb/read_time_s);
 		printf("lexing speed     :%11.2lf [MB/s]\n", text_size_mb/tok_time_s);
